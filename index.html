@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#243b53">
+<title>Виртуальная лаборатория — Равноускоренное движение</title>
+<style>
+:root{--ink:#243447;--muted:#637487;--blue:#2878a8;--cyan:#65b6c8;--paper:#f5f7f5;--line:#d5e0df;--gold:#d7a84b}
+*{box-sizing:border-box}body{margin:0;background:#e9efed;color:var(--ink);font:15px/1.5 "Segoe UI",Arial,sans-serif}
+header{background:linear-gradient(120deg,#203b50,#35677a);color:white;padding:24px clamp(16px,4vw,48px);border-bottom:5px solid #9bc7c4}
+header .eyebrow{letter-spacing:.13em;text-transform:uppercase;font-size:11px;color:#c5e2df}
+h1{font-size:clamp(23px,4vw,36px);line-height:1.15;margin:8px 0}
+header p{max-width:850px;margin:8px 0 0;color:#e0eeee}
+main{max-width:1200px;margin:22px auto;padding:0 16px 40px}
+.section{background:#fff;border:1px solid var(--line);border-radius:14px;margin:16px 0;padding:18px;box-shadow:0 5px 18px #29485b0d}
+.section h2{font-size:20px;margin:0 0 12px;color:#254d63}
+.section h3{font-size:16px;margin:16px 0 6px;color:#315d70}
+.lead{color:var(--muted);margin-top:-4px}
+.lab{padding:0;overflow:hidden;background:#e8efed}
+.labhead{padding:14px 18px;background:#dce8e5;display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap}
+.labhead strong{color:#315b68}
+.scene{position:relative;min-height:370px;padding:22px;background:linear-gradient(#dbe8e9 0%,#edf2ed 63%,#aebda7 63%,#899a7d 100%);overflow:hidden}
+.window{position:absolute;inset:0 0 37% 0;opacity:.65;background:repeating-linear-gradient(90deg,transparent 0 16%,#fff9 16.3% 16.8%,transparent 17% 33%),linear-gradient(180deg,#c7dadd,#e8efed)}
+.ceiling{position:absolute;top:0;left:0;right:0;height:38px;background:repeating-linear-gradient(90deg,#fff9 0 70px,transparent 70px 110px);opacity:.7}
+.bench{position:absolute;bottom:0;left:0;right:0;height:36%;background:linear-gradient(180deg,#b3c1a4,#879678);border-top:9px solid #77886d}
+.apparatus{position:relative;z-index:2;max-width:800px;margin:38px auto 0;height:220px}
+.rail{position:absolute;left:7%;right:7%;top:125px;height:13px;border-radius:8px;background:linear-gradient(#8799a1,#dbe2e3 45%,#637982);box-shadow:0 6px 7px #334b4c55}
+.rail:before{content:"";position:absolute;left:0;right:0;top:-5px;height:4px;background:#536b73;border-radius:5px}
+.support{position:absolute;top:138px;left:13%;width:13px;height:55px;background:#536e79;box-shadow:500px 0 #536e79}
+.cart{position:absolute;top:76px;left:12%;width:94px;height:48px;border-radius:10px 13px 7px 7px;background:linear-gradient(135deg,#5b9fb0,#24627b);border:3px solid #315b6b;box-shadow:0 7px 10px #203d4c55;transition:left .05s linear}
+.cart:before{content:"";position:absolute;left:15px;right:10px;top:7px;height:12px;background:#b7dce0;border-radius:5px}
+.wheel{position:absolute;bottom:-9px;width:18px;height:18px;border-radius:50%;background:#263b44;border:4px solid #9aa9aa}
+.wheel.one{left:13px}.wheel.two{right:13px}
+.sensor{position:absolute;top:48px;width:7px;height:77px;background:#657b82;border-radius:4px}
+.sensor:after{content:"";position:absolute;bottom:-5px;left:-8px;width:23px;height:13px;border-radius:4px;background:#d5a64c;border:2px solid #8e713a}
+.sensor.s1{left:30%}.sensor.s2{left:68%}
+.sensorlabel{position:absolute;top:25px;font-size:11px;color:#45606a;font-weight:700}.sensorlabel.l1{left:27%}.sensorlabel.l2{left:65%}
+.velocity{position:absolute;top:56px;left:13%;font-size:13px;color:#1c617f;font-weight:700}
+.readout{position:absolute;right:15px;top:10px;background:#f8fbf7eF;border:2px solid #829a92;border-radius:9px;padding:8px 12px;min-width:150px;font-size:12px;box-shadow:0 4px 12px #314b4b22}
+.readout b{font-size:18px;color:#285b70}
+.stopwatch{position:absolute;right:25px;bottom:18px;width:92px;height:92px;border-radius:50%;background:radial-gradient(circle,#fff 0 58%,#d8dedb 60% 70%,#7d8987 72%);border:4px solid #7d8987;display:grid;place-items:center;text-align:center;font-weight:700;color:#334b52;box-shadow:0 5px 10px #344b4b55}
+.stopwatch:before{content:"";position:absolute;top:-13px;width:22px;height:12px;border:4px solid #788987;border-radius:5px}
+.stopwatch span{font-size:17px}
+.controls{display:grid;grid-template-columns:repeat(4,minmax(120px,1fr));gap:12px;padding:16px;background:#f8faf8}
+.control label{display:flex;justify-content:space-between;gap:5px;font-size:13px;font-weight:600;color:#425c68}
+input[type=range]{width:100%;accent-color:#2878a8}
+.control small{color:var(--muted)}
+.actions{display:flex;gap:8px;flex-wrap:wrap;padding:0 16px 16px;background:#f8faf8}
+button{border:0;border-radius:9px;padding:10px 16px;font-weight:700;cursor:pointer;background:#2878a8;color:white}
+button.secondary{background:#dce8e7;color:#294b5a}button.gold{background:#c58d32;color:#fff}
+button:disabled{opacity:.5;cursor:not-allowed}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;padding:0 16px 16px;background:#f8faf8}
+.stat{background:white;border:1px solid var(--line);border-radius:9px;padding:10px}
+.stat small{display:block;color:var(--muted)}.stat b{font-size:19px;color:#285b70}
+.grid2{display:grid;grid-template-columns:1.1fr .9fr;gap:14px}
+canvas{width:100%;height:250px;border:1px solid var(--line);border-radius:9px;background:#fbfdfc}
+.formula{background:#f0f6f5;border-left:4px solid var(--cyan);padding:10px 13px;margin:9px 0;border-radius:5px;font-size:17px}
+table{width:100%;border-collapse:collapse;font-size:14px}th,td{border:1px solid var(--line);padding:9px;text-align:center}th{background:#eaf2f1;color:#315768}
+.tablewrap{overflow-x:auto}
+.note{background:#fff8e9;border:1px solid #ead9b6;padding:12px;border-radius:9px;color:#6a552c}
+ul,ol{padding-left:22px}li{margin:5px 0}
+footer{text-align:center;color:#72818a;padding:20px;font-size:12px}
+@media(max-width:760px){.controls{grid-template-columns:repeat(2,1fr)}.stats{grid-template-columns:repeat(2,1fr)}.grid2{grid-template-columns:1fr}.scene{min-height:340px;padding:8px}.apparatus{margin-top:55px}.stopwatch{width:75px;height:75px;right:10px}.readout{right:8px}.support{box-shadow:270px 0 #536e79}}
+</style>
+</head>
+<body>
+<header>
+  <div class="eyebrow">Виртуальный физический практикум · Механика</div>
+  <h1>Изучение равноускоренного движения<br>с начальной скоростью</h1>
+  <p>Интерактивная лабораторная работа: исследуйте движение тележки по прямолинейной направляющей, меняйте начальную скорость и ускорение, измеряйте время и анализируйте графики.</p>
+</header>
+<main>
+<section class="section">
+<h2>1. Цель и оборудование</h2>
+<p><b>Цель работы:</b> экспериментально изучить прямолинейное равноускоренное движение тела при ненулевой начальной скорости, установить связь координаты, скорости и времени, проверить кинематические уравнения и определить ускорение по результатам измерений.</p>
+<p><b>Оборудование:</b> виртуальная тележка на горизонтальном рельсовом треке, измерительная линейка, два оптических датчика, электронный секундомер, блок управления движением и компьютер для построения графиков.</p>
+</section>
+
+<section class="section lab">
+<div class="labhead"><strong>2. Виртуальная экспериментальная установка</strong><span>Модель: тележка + направляющая + датчики</span></div>
+<div class="scene">
+ <div class="window"></div><div class="ceiling"></div><div class="bench"></div>
+ <div class="readout">РЕЖИМ ДВИЖЕНИЯ<br><b id="mode">Ожидание</b><br>Путь: <span id="path">0.00</span> м</div>
+ <div class="apparatus">
+  <div class="sensor s1"></div><div class="sensor s2"></div><div class="sensorlabel l1">Датчик A</div><div class="sensorlabel l2">Датчик B</div>
+  <div class="velocity" id="arrow">v₀ →</div><div class="rail"></div><div class="support"></div>
+  <div class="cart" id="cart"><i class="wheel one"></i><i class="wheel two"></i></div>
+ </div>
+ <div class="stopwatch"><div><span id="clock">0.00</span><br><small>сек</small></div></div>
+</div>
+<div class="controls">
+ <div class="control"><label>Начальная скорость v₀ <b><span id="v0val">1.0</span> м/с</b></label><input id="v0" type="range" min="0" max="5" step=".1" value="1"><small>Скорость в момент t = 0</small></div>
+ <div class="control"><label>Ускорение a <b><span id="aval">0.5</span> м/с²</b></label><input id="acc" type="range" min="0.1" max="2" step=".1" value=".5"><small>Постоянное ускорение</small></div>
+ <div class="control"><label>Масса тележки m <b><span id="mval">0.5</span> кг</b></label><input id="mass" type="range" min=".2" max="2" step=".1" value=".5"><small>Для дополнительного расчёта F = ma</small></div>
+ <div class="control"><label>Время опыта <b><span id="tmaxval">8</span> с</b></label><input id="tmax" type="range" min="3" max="12" step="1" value="8"><small>Продолжительность наблюдения</small></div>
+</div>
+<div class="actions">
+ <button id="start">▶ Пуск</button><button class="secondary" id="pause">Ⅱ Пауза</button><button class="secondary" id="reset">↺ Сброс</button><button class="gold" id="record">＋ Записать результат</button>
+</div>
+<div class="stats">
+ <div class="stat"><small>Время t</small><b id="st">0.00 с</b></div>
+ <div class="stat"><small>Координата x</small><b id="sx">0.00 м</b></div>
+ <div class="stat"><small>Текущая скорость v</small><b id="sv">1.00 м/с</b></div>
+ <div class="stat"><small>Ускорение a</small><b id="sa">0.50 м/с²</b></div>
+</div>
+</section>
+
+<section class="section">
+<h2>3. Теоретические сведения</h2>
+<p><b>Равноускоренное прямолинейное движение</b> — движение по прямой, при котором ускорение постоянно по модулю и направлению. Скорость за равные промежутки времени изменяется на одинаковую величину.</p>
+<div class="formula">\(v = v_0 + at\) — зависимость скорости от времени</div>
+<div class="formula">\(x = x_0 + v_0t + \\frac{at^2}{2}\) — закон движения</div>
+<div class="formula">\(s = v_0t + \\frac{at^2}{2}\) — перемещение при \(x_0=0\)</div>
+<div class="formula">\(v^2-v_0^2 = 2as\) — связь скорости и перемещения</div>
+<div class="formula">\(a = \\frac{v-v_0}{t}\) — определение ускорения</div>
+<p>Здесь \(x_0\) — начальная координата, \(x\) — координата в момент времени \(t\), \(s=x-x_0\) — перемещение, \(v_0\) — начальная скорость, \(v\) — скорость в данный момент, \(a\) — ускорение.</p>
+<h3>Физический смысл графиков</h3>
+<ul>
+<li>График \(x(t)\) — парабола; при положительном ускорении её ветви направлены вверх.</li>
+<li>График \(v(t)\) — прямая с наклоном, равным ускорению. Пересечение с осью скорости даёт \(v_0\).</li>
+<li>График \(a(t)\) — горизонтальная прямая, поскольку ускорение постоянно.</li>
+<li>Площадь под графиком \(v(t)\) за промежуток времени равна перемещению.</li>
+</ul>
+<div class="note">В данной модели положительное направление выбрано вправо, начальная координата \(x_0=0\), а ускорение постоянно и направлено вдоль движения.</div>
+</section>
+
+<section class="section">
+<h2>4. Результаты и графики</h2>
+<div class="grid2">
+ <div><h3>Координата x(t)</h3><canvas id="xchart" width="600" height="260"></canvas></div>
+ <div><h3>Скорость v(t)</h3><canvas id="vchart" width="600" height="260"></canvas></div>
+</div>
+<h3>Расчёт текущих параметров</h3>
+<div class="tablewrap"><table>
+<tr><th>Величина</th><th>Формула</th><th>Результат</th></tr>
+<tr><td>Перемещение</td><td>s = v₀t + at²/2</td><td id="rs">0.000 м</td></tr>
+<tr><td>Скорость</td><td>v = v₀ + at</td><td id="rv">1.000 м/с</td></tr>
+<tr><td>Ускорение</td><td>a = const</td><td id="ra">0.500 м/с²</td></tr>
+<tr><td>Равнодействующая сила</td><td>F = ma</td><td id="rf">0.250 Н</td></tr>
+</table></div>
+</section>
+
+<section class="section">
+<h2>5. Таблица экспериментальных измерений</h2>
+<p>Запускайте модель, останавливайте её в выбранный момент и нажимайте «Записать результат». Можно внести несколько измерений и сравнить экспериментальные значения с теорией.</p>
+<div class="tablewrap"><table id="results">
+<thead><tr><th>№</th><th>t, с</th><th>x, м</th><th>v, м/с</th><th>a, м/с²</th><th>Действие</th></tr></thead>
+<tbody><tr id="empty"><td colspan="6">Пока нет записей. Проведите первый опыт.</td></tr></tbody>
+</table></div>
+<div class="actions" style="padding:12px 0 0;background:white"><button class="secondary" id="csv">⇩ Скачать таблицу CSV</button><button class="secondary" id="clear">Очистить таблицу</button></div>
+</section>
+
+<section class="section">
+<h2>6. Порядок выполнения работы</h2>
+<ol>
+<li>Ознакомьтесь с устройством виртуальной установки и назначением датчиков.</li>
+<li>Установите начальную скорость \(v_0\), ускорение \(a\), массу тележки и длительность опыта.</li>
+<li>Нажмите «Пуск». Наблюдайте за движением тележки и изменением показаний секундомера.</li>
+<li>Нажмите «Пауза» в выбранный момент. Запишите время, координату и скорость в таблицу.</li>
+<li>Повторите измерения для нескольких моментов времени.</li>
+<li>Измените начальную скорость, оставив ускорение постоянным. Сравните полученные зависимости.</li>
+<li>Измените ускорение при неизменной начальной скорости. Определите, как меняется наклон графика скорости.</li>
+<li>Сделайте вывод о характере движения и соответствии результатов кинематическим уравнениям.</li>
+</ol>
+<h3>Обработка результатов</h3>
+<p>Для каждой записи вычислите экспериментальное ускорение по формуле \(a_{эксп}=(v-v_0)/t\). Сравните его с заданным значением ускорения. Относительную погрешность можно оценить так:</p>
+<div class="formula">\\(\\varepsilon = \\frac{|a_{эксп}-a_{теор}|}{a_{теор}}\\cdot100\\%\\)</div>
+<p>Для оценки ускорения по графику \(v(t)\) выберите две точки и найдите угловой коэффициент: \(a=\\Delta v/\\Delta t\).</p>
+</section>
+
+<section class="section">
+<h2>7. Контрольные вопросы</h2>
+<ol>
+<li>Какое движение называют равноускоренным?</li>
+<li>Что физически означает начальная скорость \(v_0\)?</li>
+<li>Как направлены скорость и ускорение при увеличении скорости тела?</li>
+<li>Как выглядит график скорости от времени при постоянном ускорении?</li>
+<li>Почему график координаты при равноускоренном движении является параболой?</li>
+<li>Как по графику \(v(t)\) определить ускорение и перемещение?</li>
+<li>Зависит ли ускорение в данной модели от массы тележки?</li>
+<li>Что изменится в движении, если увеличить начальную скорость, не меняя ускорение?</li>
+</ol>
+<h3>Краткие ответы для самопроверки</h3>
+<details><summary>Показать ответы</summary>
+<ol>
+<li>Движение с постоянным ускорением.</li><li>Скорость тела в начальный момент времени.</li><li>При увеличении скорости векторы скорости и ускорения направлены одинаково.</li><li>Прямая линия, её наклон определяется ускорением.</li><li>Потому что координата содержит квадратичный член \(at^2/2\).</li><li>Ускорение — наклон прямой, перемещение — площадь под графиком.</li><li>В идеализированной модели ускорение задаётся отдельно; масса влияет на силу \(F=ma\).</li><li>График скорости сместится вверх, а координата будет расти быстрее с самого начала.</li>
+</ol>
+</details>
+</section>
+<section class="section">
+<h2>8. Вывод</h2>
+<p>По итогам работы сформулируйте вывод: подтвердилось ли уравнение \(v=v_0+at\), как начальная скорость влияет на движение, как ускорение влияет на скорость и координату, насколько измеренные значения согласуются с теоретическими.</p>
+<p><b>Шаблон вывода:</b> «В ходе лабораторной работы было исследовано равноускоренное движение тележки с начальной скоростью. Установлено, что скорость линейно зависит от времени, а координата — квадратично. При увеличении начальной скорости тело проходит больший путь за одинаковое время; при увеличении ускорения скорость изменяется быстрее…»</p>
+</section>
+</main>
+<footer>Виртуальная лабораторная работа · Учебная модель. Результаты симуляции являются расчётными и предназначены для обучения.</footer>
+<script>
+const $=id=>document.getElementById(id);
+let t=0,running=false,last=0,raf=0,rows=[];
+const v0=()=>+$('v0').value, a=()=>+$('acc').value, mass=()=>+$('mass').value, tmax=()=>+$('tmax').value;
+function values(time=t){return {x:v0()*time+.5*a()*time*time,v:v0()+a()*time}}
+function syncLabels(){
+ $('v0val').textContent=v0().toFixed(1);$('aval').textContent=a().toFixed(1);$('mval').textContent=mass().toFixed(1);$('tmaxval').textContent=tmax();
+ $('sa').textContent=a().toFixed(2)+' м/с²';$('arrow').textContent='v₀ = '+v0().toFixed(1)+' м/с  →';
+ if(!running)render();
+}
+['v0','acc','mass','tmax'].forEach(id=>$(id).addEventListener('input',syncLabels));
+function render(){
+ const q=values();$('clock').textContent=t.toFixed(2);$('st').textContent=t.toFixed(2)+' с';$('sx').textContent=q.x.toFixed(2)+' м';$('sv').textContent=q.v.toFixed(2)+' м/с';$('sa').textContent=a().toFixed(2)+' м/с²';$('path').textContent=q.x.toFixed(2);
+ $('rs').textContent=q.x.toFixed(3)+' м';$('rv').textContent=q.v.toFixed(3)+' м/с';$('ra').textContent=a().toFixed(3)+' м/с²';$('rf').textContent=(mass()*a()).toFixed(3)+' Н';
+ const maxX=v0()*tmax()+.5*a()*tmax()*tmax();const pct=Math.min(1,q.x/Math.max(maxX,.01));$('cart').style.left=(12+pct*66)+'%';
+ $('mode').textContent=running?'Движение':(t>0?'Пауза':'Ожидание');
+ draw('xchart','x');draw('vchart','v');
+}
+function draw(id,type){
+ const c=$(id),ctx=c.getContext('2d'),w=c.width,h=c.height;ctx.clearRect(0,0,w,h);
+ const pad={l:48,r:15,t:15,b:32},pw=w-pad.l-pad.r,ph=h-pad.t-pad.b;
+ const ymax=type==='x'?Math.max(1,v0()*tmax()+.5*a()*tmax()*tmax()):Math.max(1,v0()+a()*tmax());
+ ctx.strokeStyle='#dce6e4';ctx.lineWidth=1;
+ for(let i=0;i<=4;i++){let y=pad.t+ph*i/4;ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(w-pad.r,y);ctx.stroke();ctx.fillStyle='#617582';ctx.font='12px Arial';ctx.fillText((ymax*(4-i)/4).toFixed(1),5,y+4)}
+ for(let i=0;i<=4;i++){let x=pad.l+pw*i/4;ctx.beginPath();ctx.moveTo(x,pad.t);ctx.lineTo(x,pad.t+ph);ctx.stroke();ctx.fillText((tmax()*i/4).toFixed(1),x-8,h-9)}
+ ctx.strokeStyle='#2878a8';ctx.lineWidth=3;ctx.beginPath();
+ for(let i=0;i<=100;i++){let tm=tmax()*i/100,q=values(tm),val=type==='x'?q.x:q.v,x=pad.l+pw*tm/tmax(),y=pad.t+ph*(1-val/ymax);i?ctx.lineTo(x,y):ctx.moveTo(x,y)}
+ ctx.stroke();
+ let cur=values(),val=type==='x'?cur.x:cur.v;ctx.fillStyle='#d28d2e';ctx.beginPath();ctx.arc(pad.l+pw*t/tmax(),pad.t+ph*(1-val/ymax),5,0,Math.PI*2);ctx.fill();
+ ctx.fillStyle='#345767';ctx.font='bold 13px Arial';ctx.fillText(type==='x'?'x, м':'v, м/с',pad.l,12);ctx.fillText('t, с',w-35,h-8);
+}
+function tick(now){if(!running)return;if(!last)last=now;t+=Math.min((now-last)/1000,.05);last=now;if(t>=tmax()){t=tmax();running=false;last=0}render();if(running)raf=requestAnimationFrame(tick)}
+$('start').onclick=()=>{if(t>=tmax())t=0;if(!running){running=true;last=0;raf=requestAnimationFrame(tick);render()}};
+$('pause').onclick=()=>{running=false;cancelAnimationFrame(raf);last=0;render()};
+$('reset').onclick=()=>{running=false;cancelAnimationFrame(raf);last=0;t=0;render()};
+$('record').onclick=()=>{const q=values();rows.push({t,x:q.x,v:q.v,a:a()});updateTable()};
+function updateTable(){const body=$('results').querySelector('tbody');body.innerHTML='';if(!rows.length){body.innerHTML='<tr><td colspan="6">Пока нет записей. Проведите первый опыт.</td></tr>';return}
+ rows.forEach((r,i)=>{let tr=document.createElement('tr');[i+1,r.t.toFixed(2),r.x.toFixed(3),r.v.toFixed(3),r.a.toFixed(3)].forEach(v=>{let td=document.createElement('td');td.textContent=v;tr.appendChild(td)});let td=document.createElement('td'),b=document.createElement('button');b.textContent='Удалить';b.className='secondary';b.onclick=()=>{rows.splice(i,1);updateTable()};td.appendChild(b);tr.appendChild(td);body.appendChild(tr)})}
+$('clear').onclick=()=>{rows=[];updateTable()};
+$('csv').onclick=()=>{if(!rows.length){alert('Сначала запишите хотя бы одно измерение.');return}let data='№;t, с;x, м;v, м/с;a, м/с²\\n'+rows.map((r,i)=>[i+1,r.t,r.x,r.v,r.a].join(';')).join('\\n');let blob=new Blob(['\\ufeff'+data],{type:'text/csv;charset=utf-8'}),url=URL.createObjectURL(blob),ael=document.createElement('a');ael.href=url;ael.download='rezultaty_laboratornoy.csv';ael.click();URL.revokeObjectURL(url)};
+syncLabels();render();
+</script>
+</body>
+</html>
